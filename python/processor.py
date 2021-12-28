@@ -100,6 +100,25 @@ class ImageProcessor(Processor):
             cv2.destroyAllWindows()
         
         return [image]
+    
+    def get_corners(self, image, matrix_size=(19, 19), is_show=False):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("corner", gray)
+        
+        ret, chess_corners = cv2.findChessboardCorners(gray, matrix_size, None)
+        
+        corners = None
+        if ret:
+            criteria = (cv2.TERM_CRITERIA_EPS+cv2.TERM_CRITERIA_MAX_ITER, 30 ,0.001)
+            corners = cv2.cornerSubPix(gray, chess_corners, (11, 11), (-1, -1), criteria)
+            if is_show:
+                cv2.drawChessboardCorners(image, (19, 19), corners, ret)
+                cv2.imshow("corner", image)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            corners = corners.reshape(-1, 2)
+            corners = list(map(lambda x: Point(x[0], x[1]), corners))
+        return corners
                     
     def operate(self):
         pass

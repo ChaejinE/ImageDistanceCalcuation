@@ -41,16 +41,20 @@ class Homography(MatrixCalculator):
         
     def __call__(self, src_pts, dst_pts):
         self.__init__(src_pts=src_pts, dst_pts=dst_pts)
-        
         os.makedirs("./matrix", exist_ok=True)
         matrix = self.calculate()
         if matrix is not None:
             with open("./matrix/homography.yaml", 'w') as f:
+                if type(self._src) is not list:
+                    src_pts = self._src.tolist()
+                    dst_pts = self._dst.tolist()
                 matrix_yaml = {'homography': matrix.tolist(),
                                'inv_homography':np.linalg.inv(matrix).tolist(),
                                'src': src_pts,
                                'dst': dst_pts}
                 yaml.safe_dump(matrix_yaml, f, default_flow_style=False, sort_keys=False)
+        
+        return matrix
         
 if __name__ == "__main__":
     src_pts = [(1, 2), (3, 4), (4, 5), (5, 6)]
