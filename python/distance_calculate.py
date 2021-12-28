@@ -82,18 +82,29 @@ def distance_calc_using_label(label_dir="./label", specific_cls=None, d_size=(83
             tl, br = tuple(map(int, pt1)), tuple(map(int, pt2))
             pt1, pt2 = point.transform_ground(tl, br)
             cx = pt1[0] + (pt2[0] - pt1[0]) // 2
-            print(cx, pt1[1])
+            
             dist = distance_calc((cx, pt1[1]))
             image = cv2.circle(image, (cx, pt1[1]), 3, color=(0, 0, 255), thickness=-1)
             image = cv2.putText(image, org=(cx+10, pt1[1]+10), text=f"X:{cx}", \
                                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0, 255, 0))
             image = cv2.putText(image, org=(cx+10, pt1[1]+25), text=f"Y:{pt1[1]}", \
                                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0, 255, 0))
-            image = cv2.putText(image, org=(cx+10, pt1[1]+35), text=f"Distance : {int(dist)} m",\
+            image = cv2.putText(image, org=(cx+10, pt1[1]+35 ), text=f"Distance : {int(dist)} m",\
                                 fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(0, 255, 0))
     cv2.imshow("test", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    
+    save_dir = "./calc_result"
+    os.makedirs(f"./{save_dir}", exist_ok=True)
+    save_file_name = "result"
+    count = 0
+    for file in os.listdir(save_dir):
+        if file.startswith(save_file_name):
+            count += 1
+    
+    cv2.imwrite(f"./{save_dir}/{save_file_name}{count}.jpg", image) if count != 0 \
+                else cv2.imwrite(f"./{save_dir}/{save_file_name}.jpg", image)
             
 if __name__ == "__main__":
     distance_calc_using_label(specific_cls=3)
